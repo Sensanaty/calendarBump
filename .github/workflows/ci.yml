@@ -20,14 +20,22 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Test Local Action
         id: test-action
         uses: ./
 
-      - name: Output local action outputs
-        id: outputs
+      - name: Merge version bump
+        id: merge
         env:
           OLD_VERSION: ${{ steps.test-action.outputs.previous-version }}
           NEW_VERSION: ${{ steps.test-action.outputs.new-version }}
-        run: echo "Previous is $OLD_VERSION, New is $NEW_VERSION"
+        run: |
+          git config --local user.name "Github Action Runner"
+          git config --local user.email "<>"
+          git commit -a --amend --no-edit
+          git push --force-with-lease
+          echo "Version bumped from ${OLD_VERSION} to ${NEW_VERSION}"
