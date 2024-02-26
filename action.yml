@@ -2,13 +2,6 @@ name: CalBump
 description: Bumps a version file based on the current date & time
 author: Sensanaty
 
-# Define your inputs here.
-inputs:
-  who-to-greet:
-    description: Who to greet
-    required: true
-    default: World
-
 outputs:
   previous-version:
     description: The previous version found in the VERSION file
