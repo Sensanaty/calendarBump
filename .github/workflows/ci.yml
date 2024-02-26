@@ -24,3 +24,10 @@ jobs:
       - name: Test Local Action
         id: test-action
         uses: ./
+
+      - name: Output local action outputs
+        id: outputs
+        env:
+          OLD_VERSION: ${{ steps.test-action.outputs.previous-version }}
+          NEW_VERSION: ${{ steps.test-action.outputs.new-version }}
+        run: echo "Previous is $OLD_VERSION, New is $NEW_VERSION"
