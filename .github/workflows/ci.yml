@@ -48,3 +48,4 @@ jobs:
           git config --local user.name "${USER}"
           git config --local user.email "<${EMAIL}>"
           git tag -a $NEW -m ""
+          git push origin $NEW
