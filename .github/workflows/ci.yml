@@ -47,5 +47,5 @@ jobs:
           echo "Bumping from ${OLD} to ${NEW}"
           git config --local user.name "${USER}"
           git config --local user.email "<${EMAIL}>"
-          git tag -a $NEW -m ${LAST_COMMIT}
+          git tag -a $NEW -m "${LAST_COMMIT}"
           git push origin $NEW
