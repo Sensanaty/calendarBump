@@ -1,4 +1,3 @@
-import { spawn } from "child_process";
 import { setOutput, getInput } from "@actions/core";
 
 const VERSION_REGEX = /(\d{2})\.(\d{1,2})\.(\d{1,2})\.(\d+)/g;
@@ -40,7 +39,6 @@ export default function writeNewVersion() {
     }
   }
 
-
   setOutput(
     "old",
     `v${currentVersion.year}.${currentVersion.month}.${currentVersion.day}.${currentVersion.bump}`
@@ -58,14 +56,6 @@ export default function writeNewVersion() {
     day: formattedCurrentDate.day,
     bump: areDateBitsDifferent ? 0 : currentVersion.bump + 1,
   };
-
-  // spawn("git", [
-  //   "tag",
-  //   "-a",
-  //   `v${newFormattedVersion.year}.${newFormattedVersion.month}.${newFormattedVersion.day}.${newFormattedVersion.bump}`,
-  //   "-m",
-  //   ""
-  // ]);
 
   setOutput(
     "new",

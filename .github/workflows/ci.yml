@@ -34,7 +34,6 @@ jobs:
         with:
           tag: ${{ env.TAG }}
 
-
       - name: Create annotated tag
         id: tag
         env:
