@@ -27,6 +27,7 @@ jobs:
         id: get-tag
         run: |
           echo "TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+          echo "LAST_COMMIT=$(git show --summary --pretty=format:'%h - %s (%cd) <%an>') >> $GITHUB_ENV
 
       - name: Test Local Action
         id: test-action
@@ -41,7 +42,7 @@ jobs:
           NEW: ${{ steps.test-action.outputs.new }}
           USER: ${{ github.actor }}
           EMAIL: ${{ github.event.pusher.email }}
-          LAST_COMMIT: ${{ github.event.commits[0].message }}
+          LAST_COMMIT: ${{ env.LAST_COMMIT }}
 
         run: |
           echo "Bumping from ${OLD} to ${NEW}"
