@@ -6,8 +6,11 @@
   "scripts": {
     "bundle": "npm run format:write && npm run build",
     "format:write": "prettier --write **/*.ts",
-    "build": "ncc build src/index.ts -m",
-    "build:watch": "ncc build src/index.ts -m --watch"
+    "build:calendar": "ncc build .github/actions/calendarBump/index.ts -m -o .github/actions/calendarBump/dist",
+    "build:changelog": "ncc build .github/actions/createChangelog/index.ts -m -o .github/actions/calendarBump/dist",
+    "build:watch:calendar": "npm run build:calendar --watch",
+    "build:watch:changelog": "npm run build:changelog --watch",
+    "build": "npm run build:calendar && npm run build:changelog"
   },
   "exports": {
     ".": "./dist/index.js"
