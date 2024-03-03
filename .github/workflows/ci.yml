@@ -30,7 +30,7 @@ jobs:
 
       - name: Test Local Action
         id: test-action
-        uses: ./.github/actions/calendarBump
+        uses: ./
         with:
           tag: ${{ env.TAG }}
 
