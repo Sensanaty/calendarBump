@@ -27,7 +27,7 @@ jobs:
         id: get-tag
         run: |
           echo "TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
-          echo "LAST_COMMIT=$(git show --summary --pretty=format:'%h - %s (%cd) <%an>') >> $GITHUB_ENV
+          echo "LAST_COMMIT=$(git show --summary --pretty=format:'%h - %s (%cd) <%an>')" >> $GITHUB_ENV
 
       - name: Test Local Action
         id: test-action
