@@ -1,6 +1,5 @@
-import { writeFileSync, readFileSync, existsSync } from "fs";
-import { setOutput } from "@actions/core";
-import { cwd } from "process";
+import { spawn } from "child_process";
+import { setOutput, getInput } from "@actions/core";
 
 const VERSION_REGEX = /(\d{2})\.(\d{1,2})\.(\d{1,2})\.(\d+)/g;
 
@@ -14,42 +13,37 @@ function formatCurrentDate(): { year: number; month: number; day: number } {
   return { year, month, day };
 }
 
-function formatCurrentVersionFile(): {
-  year: number;
-  month: number;
-  day: number;
-  bump: number;
-} {
-  const versionFileContents = readFileSync("VERSION", "utf-8");
-
-  const currentVersionBitsFromFile = [
-    ...versionFileContents.matchAll(VERSION_REGEX),
-  ];
-
-  return {
-    year: parseInt(currentVersionBitsFromFile[0][1]),
-    month: parseInt(currentVersionBitsFromFile[0][2]),
-    day: parseInt(currentVersionBitsFromFile[0][3]),
-    bump: parseInt(currentVersionBitsFromFile[0][4]),
-  };
-}
-
 export default function writeNewVersion() {
   const formattedCurrentDate = formatCurrentDate();
 
-  if (!existsSync(`${cwd()}/VERSION`)) {
-    const output = `${formattedCurrentDate.year}.${formattedCurrentDate.month}.${formattedCurrentDate.day}.0`;
-    writeFileSync("VERSION", output + "\n");
-    setOutput("previous-version", output);
-    setOutput("new-version", output);
-    return;
+  const tag = getInput("tag");
+
+  let currentVersion: { year: number; month: number; day: number; bump: number; };
+
+  if (!tag) {
+    currentVersion = {
+      year: formattedCurrentDate.year,
+      month: formattedCurrentDate.month,
+      day: formattedCurrentDate.day,
+      bump: 0,
+    }
+  } else {
+    const currentVersionBitsFromTag = [
+      ...tag.matchAll(VERSION_REGEX),
+    ];
+
+    currentVersion = {
+      year: parseInt(currentVersionBitsFromTag[0][1]),
+      month: parseInt(currentVersionBitsFromTag[0][2]),
+      day: parseInt(currentVersionBitsFromTag[0][3]),
+      bump: parseInt(currentVersionBitsFromTag[0][4]),
+    }
   }
 
-  const currentVersion = formatCurrentVersionFile();
 
   setOutput(
-    "previous-version",
-    `${currentVersion.year}.${currentVersion.month}.${currentVersion.day}.${currentVersion.bump}`,
+    "old",
+    `v${currentVersion.year}.${currentVersion.month}.${currentVersion.day}.${currentVersion.bump}`
   );
 
   // If any of the date bits don't match the current date, we should revert the bump bit to 0
@@ -65,13 +59,16 @@ export default function writeNewVersion() {
     bump: areDateBitsDifferent ? 0 : currentVersion.bump + 1,
   };
 
-  writeFileSync(
-    "VERSION",
-    `${newFormattedVersion.year}.${newFormattedVersion.month}.${newFormattedVersion.day}.${newFormattedVersion.bump}\n`,
-  );
+  // spawn("git", [
+  //   "tag",
+  //   "-a",
+  //   `v${newFormattedVersion.year}.${newFormattedVersion.month}.${newFormattedVersion.day}.${newFormattedVersion.bump}`,
+  //   "-m",
+  //   ""
+  // ]);
 
   setOutput(
-    "new-version",
-    `${newFormattedVersion.year}.${newFormattedVersion.month}.${newFormattedVersion.day}.${newFormattedVersion.bump}`,
+    "new",
+    `v${newFormattedVersion.year}.${newFormattedVersion.month}.${newFormattedVersion.day}.${newFormattedVersion.bump}`
   );
 }

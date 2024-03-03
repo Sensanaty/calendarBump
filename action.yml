@@ -1,11 +1,15 @@
 name: CalBump
-description: Bumps a version file based on the current date & time
+description: Bumps a version file based on the current date & time followed by a bump number, for example v24.3.3.10
 author: Sensanaty
 
+inputs:
+  tag:
+    description: The value of the current tag. If none is provided, it will default to today's Calendar version with the bump version set to 0.
+
 outputs:
-  previous-version:
+  old:
     description: The previous version found in the VERSION file
-  new-version:
+  new:
     description: The new version of the project
 
 runs:

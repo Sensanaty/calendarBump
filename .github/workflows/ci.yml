@@ -10,6 +10,9 @@ permissions:
 
 jobs:
   test-action:
+    permissions:
+      contents: write
+
     name: GitHub Actions Test
     runs-on: ubuntu-latest
 
@@ -20,18 +23,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get latest tag
+        id: get-tag
+        run: |
+          echo "TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+
       - name: Test Local Action
         id: test-action
         uses: ./
+        with:
+          tag: ${{ env.TAG }}
 
-      - name: Merge version bump
-        id: merge
+
+      - name: Create annotated tag
+        id: tag
         env:
-          OLD_VERSION: ${{ steps.test-action.outputs.previous-version }}
-          NEW_VERSION: ${{ steps.test-action.outputs.new-version }}
+          OLD: ${{ steps.test-action.outputs.old }}
+          NEW: ${{ steps.test-action.outputs.new }}
+          USER: ${{ github.actor }}
+          EMAIL: ${{ github.event.pusher.email }}
+
         run: |
-          git config --local user.name "Github Action Runner"
-          git config --local user.email "<>"
-          git commit -a --amend --no-edit
-          git push --force-with-lease
-          echo "Version bumped from ${OLD_VERSION} to ${NEW_VERSION}"
+          echo "Bumping from ${OLD} to ${NEW}"
+          git config --local user.name "${USER}"
+          git config --local user.email "<${EMAIL}>"
+          git tag -a $NEW -m ""
